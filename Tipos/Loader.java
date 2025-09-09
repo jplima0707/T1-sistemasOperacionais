@@ -15,6 +15,9 @@ public class Loader {
                 programas.add(p);
             }
         }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
         return programas;
     }
@@ -40,13 +43,11 @@ public class Loader {
 
             if (lendoCode) {
                 // Label
-                if (linha.contains(":")) {
-                    String[] parts = linha.split(":");
-                    String labelName = parts[0].trim();
-                    labels.put(labelName, codigo.size()); // posição atual
-                    linha = parts[1].trim(); // pode ter instrução depois do ":"
-                    if (linha.isEmpty()) continue;
-                }
+                if (linha.endsWith(":")) {
+                String label = linha.substring(0, linha.length() - 1).trim();
+                labels.put(label, codigo.size()); // aponta para a próxima instrução
+                continue;
+            }
 
                 // Instrução
                 String[] parts = linha.split(" ", 2);

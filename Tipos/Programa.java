@@ -38,6 +38,11 @@ public class Programa {
     }
 
     private void interpretar(Instrucao instrucao) {
+        try {
+            Thread.sleep(500); // pausa de 500 milissegundos para visualização
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String cmd = instrucao.getComando();
         String op = instrucao.getOperando();
 

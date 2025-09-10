@@ -64,6 +64,6 @@ public class Loader {
             }
         }
 
-        return new Programa(variaveis, codigo, labels);
+        return new Programa(variaveis, codigo, labels, 0, 0); // pid e admissão serão definidos depois
     }
 }

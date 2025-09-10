@@ -8,13 +8,19 @@ public class Programa {
     private List<Instrucao> codigo;           // lista de instruções
     private int acc;                          // acumulador
     private int pc;                           // program counter
+    private int pid;
+    private Status status;                  // estado do programa
+    private int admissao;                   // segundo de admissão
 
-    public Programa(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels) {
+    public Programa(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int pid, int admissao) {
         this.variaveis = variaveis;
         this.codigo = codigo;
         this.labels = labels;
         this.acc = 0;
         this.pc = 0;
+        this.pid = pid;
+        this.admissao = admissao;
+        this.status = Status.NOVO;
     }
 
     private int getValorOperando(String op) {
@@ -25,8 +31,8 @@ public class Programa {
         return variaveis.get(op); // direto (valor da variável)
     }
 
-    private void setValorVariavel(String nome, int valor) {
-        variaveis.put(nome, valor);
+    private void setValorVariavel(String pid, int valor) {
+        variaveis.put(pid, valor);
     }
 
 
@@ -144,11 +150,68 @@ public class Programa {
         }
     }
 
+    public int getAcc() {
+        return acc;
+    }
+
+    public int getPc() {
+        return pc;
+    }
+
+    public Map<String, Integer> getVariaveis() {
+        return variaveis;
+    }
+
+    public int getPid() {
+        return pid;
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
+    }
+
+    public int getAdmissao() {
+        return admissao;
+    }
+
+    public void setAdmissao(int admissao) {
+        this.admissao = admissao;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setVariaveis(Map<String, Integer> variaveis) {
+        this.variaveis = variaveis;
+    }
+
+    public Map<String, Integer> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Integer> labels) {
+        this.labels = labels;
+    }
+
+    public List<Instrucao> getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(List<Instrucao> codigo) {
+        this.codigo = codigo;
+    }
+
     @Override
     public String toString() {
-        return "{" +
-                "variaveis=" + variaveis +
-                ", labels=" + labels +
+        return "Programa{" + "\n" +
+                "pid=" + pid + ",\n" +
+                "status=" + status + ",\n" +
+                "admissao=" + admissao + "\n" +
                 '}';
     }
 }

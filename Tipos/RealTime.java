@@ -16,14 +16,28 @@ public class RealTime extends Programa {
         this.quantumRestante = quantum;
     }
 
-    public RealTime(Programa p, int deadline, int quantum) {
+    public RealTime(ProgramaBase p, int quantum) {
         super(p.getVariaveis(), p.getCodigo(), p.getLabels(), p.getPid(), p.getAdmissao());
         this.quantum = quantum;
+        this.quantumRestante = quantum;
+        this.altaPrioridade = false;
     }
 
     @Override
     public void executarTick() {
-        quantumRestante--;
+        if (pc < codigo.size() && quantumRestante > 0) {
+            Instrucao instrucao = codigo.get(pc);
+
+            interpretar(instrucao);
+
+            pc++;
+            quantumRestante--;
+        } else if (quantumRestante <= 0 && status == Status.EXECUTANDO) {
+            status = Status.PRONTO;
+            quantumRestante = quantum; // reseta para próxima vez que for escalonado
+        } else {
+            status = Status.FINALIZADO;
+        }
     }
 
     public boolean isAltaPrioridade() {
@@ -50,12 +64,4 @@ public class RealTime extends Programa {
         this.quantumRestante = quantumRestante;
     }
 
-    @Override
-    public String toString() {
-        return "RealTime { \n" +
-                "deadline=" + deadline + ",\n" +
-                "altaPrioridade=" + altaPrioridade + ",\n" +
-                "quantum=" + quantum + "\n" +
-                "} " + super.toString();
-    }
 }

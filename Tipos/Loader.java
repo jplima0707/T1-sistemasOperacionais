@@ -6,12 +6,12 @@ import java.util.*;
 
 public class Loader {
 
-    public static List<Programa> carregarProgramas(String pasta) throws IOException {
-        List<Programa> programas = new ArrayList<>();
+    public static List<ProgramaBase> carregarProgramas(String pasta) throws IOException {
+        List<ProgramaBase> programas = new ArrayList<>();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(pasta), "*.txt")) {
             for (Path arquivo : stream) {
-                Programa p = carregarPrograma(arquivo.toFile());
+                ProgramaBase p = carregarPrograma(arquivo.toFile());
                 programas.add(p);
             }
         }
@@ -22,7 +22,7 @@ public class Loader {
         return programas;
     }
 
-    private static Programa carregarPrograma(File arquivo) throws IOException {
+    private static ProgramaBase carregarPrograma(File arquivo) throws IOException {
         Map<String, Integer> variaveis = new HashMap<>();
         Map<String, Integer> labels = new HashMap<>();
         List<Instrucao> codigo = new ArrayList<>();
@@ -45,7 +45,7 @@ public class Loader {
                 // Label
                 if (linha.endsWith(":")) {
                 String label = linha.substring(0, linha.length() - 1).trim();
-                labels.put(label, codigo.size()); // aponta para a próxima instrução
+                labels.put(label, codigo.size()); // próxima instrução
                 continue;
             }
 
@@ -64,6 +64,48 @@ public class Loader {
             }
         }
 
-        return new Programa(variaveis, codigo, labels, 0, 0); // pid e admissão serão definidos depois
+        return new ProgramaBase(variaveis, codigo, labels, 0, 0); // pid e admissão serão definidos depois
+    }
+
+    public void classificaProgramas(Escalonador escalonador) throws IOException{
+        List<ProgramaBase> programas = carregarProgramas("Codigos");
+        Scanner in = new Scanner(System.in);
+
+        int i = 1;
+        for (ProgramaBase info : programas) {
+            System.out.println("\n=== Admitindo programa " + i + " ===");
+
+            System.out.println("Qual o tempo de admissão (em segundos)?");
+            int tempoAdmissao = in.nextInt();
+
+            System.out.println("O programa é BestEffort ou RealTime? (0 BestEffort / 1 RealTime)");
+            int tipo = in.nextInt();
+
+            if (tipo == 0) {
+                BestEffort be = new BestEffort(info);
+                be.setAdmissao(tempoAdmissao);
+                be.setPid(i);
+                escalonador.adicionarPrograma(be);
+
+            } else if (tipo == 1) {
+                System.out.println("Qual o quantum?");
+                int quantum = in.nextInt();
+
+                System.out.println("O programa é de alta prioridade? (0 Não / 1 Sim)");
+                int prioridade = in.nextInt();
+
+                RealTime rt = new RealTime(info, quantum);
+                rt.setAdmissao(tempoAdmissao);
+                rt.setPid(i);
+                rt.setAltaPrioridade(prioridade == 1);
+                escalonador.adicionarPrograma(rt);
+
+            } else {
+                System.out.println("Tipo inválido. Pulando programa.");
+            }
+
+            i++;
+        }
+        in.close();
     }
 }

@@ -3,14 +3,15 @@ package Tipos;
 import java.util.*;
 
 public abstract class Programa {
-    private Map<String, Integer> variaveis;   // nome -> valor
-    private Map<String, Integer> labels;      // label -> posição na lista de código
-    private List<Instrucao> codigo;           // lista de instruções
-    private int acc;                          // acumulador 
-    private int pc;                           // program counter
-    private int pid;                          // identificador do processo
-    private int admissao;                     // tempo de admissão do processo
-    private Status status;                  // status do processo
+    protected Map<String, Integer> variaveis;   // nome -> valor
+    protected Map<String, Integer> labels;      // label -> posição na lista de código
+    protected List<Instrucao> codigo;           // lista de instruções
+    protected int acc;                          // acumulador 
+    protected int pc;                           // program counter
+    protected int pid;                          // identificador do processo
+    protected int admissao;                     // tempo de admissão do processo
+    protected Status status;                  // status do processo
+    protected int ticksBloqueados;            // ticks restantes em estado BLOQUEADO
 
     public Programa(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int pid, int admissao) {
         this.variaveis = variaveis;
@@ -21,11 +22,12 @@ public abstract class Programa {
         this.pid = pid;
         this.admissao = admissao;
         this.status = Status.NOVO;
+        this.ticksBloqueados = 0;
     }
 
     public abstract void executarTick();
 
-    private int getValorOperando(String op) {
+    protected int getValorOperando(String op) {
         if (op == null) return 0;
         if (op.startsWith("#")) { // imediato (valor após o #)
             return Integer.parseInt(op.substring(1));
@@ -33,85 +35,73 @@ public abstract class Programa {
         return variaveis.get(op); // direto (valor da variável)
     }
 
-    private void setValorVariavel(String nome, int valor) {
+    protected void setValorVariavel(String nome, int valor) {
         variaveis.put(nome, valor);
     }
 
-
-    public void executar() {
-        while (pc < codigo.size()) {
-            Instrucao instrucao = codigo.get(pc);
-            interpretar(instrucao);
-        }
-    }
-
-    private void interpretar(Instrucao instrucao) {
-        try {
-            Thread.sleep(500); // pausa de 0.5 segundo
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    protected void interpretar(Instrucao instrucao) {
         String cmd = instrucao.getComando();
         String op = instrucao.getOperando();
+        status = Status.EXECUTANDO;
 
         switch (cmd) {
             // Aritmético
             case "ADD":
                 acc += getValorOperando(op);
-                System.out.println("ADD " + op + " na linha " + pc + " /acc=" + acc);
+                System.out.println("ADD " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
                 pc++;
                 break;
             case "SUB":
                 acc -= getValorOperando(op);
-                System.out.println("SUB " + op + " na linha " + pc + " /acc=" + acc);
+                System.out.println("SUB " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
                 pc++;
                 break;
             case "MULT":
                 acc *= getValorOperando(op);
-                System.out.println("MULT " + op + " na linha " + pc + " /acc=" + acc);
+                System.out.println("MULT " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
                 pc++;
                 break;
             case "DIV":
                 acc /= getValorOperando(op);
-                System.out.println("DIV " + op + " na linha " + pc + " /acc=" + acc);
+                System.out.println("DIV " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
                 pc++;
                 break;
 
             // Memória
             case "LOAD":
                 acc = getValorOperando(op);
-                System.out.println("LOAD " + op + " na linha " + pc + " /acc=" + acc);
+                System.out.println("LOAD " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
                 pc++;
                 break;
             case "STORE":
                 setValorVariavel(op, acc);
-                System.out.println("STORE " + op + " na linha " + pc + " /acc=" + acc);
+                System.out.println("STORE " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
                 pc++;
                 break;
 
             // Saltos
             case "BRANY":
                 pc = labels.get(op);
-                System.out.println("Pulou para " + op + " (BRANY)" + " /acc=" + acc);
+                System.out.println("Pulou para " + op + " (BRANY)" + " no programa " + pid + " /acc=" + acc);
                 break;
             case "BRPOS":
                 if (acc > 0){
                     pc = labels.get(op);
-                    System.out.println("Pulou para " + op + " (BRPOS)" + " /acc=" + acc);
+                    System.out.println("Pulou para " + op + " (BRPOS)" + " no programa " + pid + " /acc=" + acc);
                 }
                 else pc++;
                 break;
             case "BRZERO":
                 if (acc == 0){
                  pc = labels.get(op);
-                System.out.println("Pulou para " + op + " (BRZERO)" + " /acc=" + acc);
+                System.out.println("Pulou para " + op + " (BRZERO)" + " no programa " + pid + " /acc=" + acc);
                 }
                 else pc++;
                 break;
             case "BRNEG":
                 if (acc < 0){
                     pc = labels.get(op);
-                    System.out.println("Pulou para " + op + " (BRNEG)" + " /acc=" + acc);
+                    System.out.println("Pulou para " + op + " (BRNEG)" + " no programa " + pid + " /acc=" + acc);
                 }
                 else pc++;
                 break;
@@ -119,8 +109,7 @@ public abstract class Programa {
             // Sistema
             case "SYSCALL":
                 try {
-                    Random rand = new Random();
-                    Thread.sleep(rand.nextInt(2000) + 3000); // pausa aleatória entre 3 e 5 segundos
+                    ticksBloqueados = new Random().nextInt(3) + 3; // 3 a 5 ticks
                     syscall(Integer.parseInt(op));
                     pc++;
                     break;
@@ -133,20 +122,23 @@ public abstract class Programa {
         }
     }
 
-    private void syscall(int index) {
+    protected void syscall(int index) {
         switch (index) {
             case 0:
                 System.out.println("Fim do programa.");
                 pc = codigo.size(); // força saída
+                status = Status.FINALIZADO;
                 break;
             case 1:
                 System.out.println("ACC = " + acc);
+                status = Status.BLOQUEADO;
                 break;
             case 2:
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Digite um valor inteiro:");
                 int valor = scanner.nextInt();
                 acc = valor;
+                status = Status.BLOQUEADO;
                 break;
             default:
                 System.out.println("Syscall não implementada: " + index);
@@ -211,5 +203,13 @@ public abstract class Programa {
 
     public void setAcc(int acc) {
         this.acc = acc;
+    }
+
+    public int getTicksBloqueados() {
+        return ticksBloqueados;
+    }
+
+    public void setTicksBloqueados(int ticksBloqueados) {
+        this.ticksBloqueados = ticksBloqueados;
     }
 }

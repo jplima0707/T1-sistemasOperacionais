@@ -9,12 +9,20 @@ public class BestEffort extends Programa {
         super(variaveis, codigo, labels, pid, admissao);
     }
 
-    public BestEffort(Programa p) {
+    public BestEffort(ProgramaBase p) {
         super(p.getVariaveis(), p.getCodigo(), p.getLabels(), p.getPid(), p.getAdmissao());
     }
 
     @Override
     public void executarTick() {
-        return;
+        if (pc < codigo.size()) {
+            Instrucao instrucao = codigo.get(pc);
+
+            interpretar(instrucao);
+
+            pc++;
+        } else {
+            status = Status.FINALIZADO;
+        }
     }
 }

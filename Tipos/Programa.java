@@ -2,15 +2,15 @@ package Tipos;
 
 import java.util.*;
 
-public class Programa {
+public abstract class Programa {
     private Map<String, Integer> variaveis;   // nome -> valor
     private Map<String, Integer> labels;      // label -> posição na lista de código
     private List<Instrucao> codigo;           // lista de instruções
-    private int acc;                          // acumulador
+    private int acc;                          // acumulador 
     private int pc;                           // program counter
-    private int pid;
-    private Status status;                  // estado do programa
-    private int admissao;                   // segundo de admissão
+    private int pid;                          // identificador do processo
+    private int admissao;                     // tempo de admissão do processo
+    private Status status;                  // status do processo
 
     public Programa(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int pid, int admissao) {
         this.variaveis = variaveis;
@@ -23,6 +23,8 @@ public class Programa {
         this.status = Status.NOVO;
     }
 
+    public abstract void executarTick();
+
     private int getValorOperando(String op) {
         if (op == null) return 0;
         if (op.startsWith("#")) { // imediato (valor após o #)
@@ -31,8 +33,8 @@ public class Programa {
         return variaveis.get(op); // direto (valor da variável)
     }
 
-    private void setValorVariavel(String pid, int valor) {
-        variaveis.put(pid, valor);
+    private void setValorVariavel(String nome, int valor) {
+        variaveis.put(nome, valor);
     }
 
 
@@ -45,7 +47,7 @@ public class Programa {
 
     private void interpretar(Instrucao instrucao) {
         try {
-            Thread.sleep(500); // pausa de 500 milissegundos para visualização
+            Thread.sleep(500); // pausa de 0.5 segundo
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -117,7 +119,8 @@ public class Programa {
             // Sistema
             case "SYSCALL":
                 try {
-                    Thread.sleep(5000); 
+                    Random rand = new Random();
+                    Thread.sleep(rand.nextInt(2000) + 3000); // pausa aleatória entre 3 e 5 segundos
                     syscall(Integer.parseInt(op));
                     pc++;
                     break;
@@ -150,16 +153,24 @@ public class Programa {
         }
     }
 
-    public int getAcc() {
-        return acc;
-    }
-
-    public int getPc() {
-        return pc;
+    @Override
+    public String toString() {
+        return "{" +
+                "variaveis=" + variaveis +
+                ", labels=" + labels +
+                '}';
     }
 
     public Map<String, Integer> getVariaveis() {
         return variaveis;
+    }
+
+    public Map<String, Integer> getLabels() {
+        return labels;
+    }
+
+    public List<Instrucao> getCodigo() {
+        return codigo;
     }
 
     public int getPid() {
@@ -186,32 +197,19 @@ public class Programa {
         this.status = status;
     }
 
-    public void setVariaveis(Map<String, Integer> variaveis) {
-        this.variaveis = variaveis;
+    public int getPc() {
+        return pc;
     }
 
-    public Map<String, Integer> getLabels() {
-        return labels;
+    public void setPc(int pc) {
+        this.pc = pc;
     }
 
-    public void setLabels(Map<String, Integer> labels) {
-        this.labels = labels;
+    public int getAcc() {
+        return acc;
     }
 
-    public List<Instrucao> getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(List<Instrucao> codigo) {
-        this.codigo = codigo;
-    }
-
-    @Override
-    public String toString() {
-        return "Programa{" + "\n" +
-                "pid=" + pid + ",\n" +
-                "status=" + status + ",\n" +
-                "admissao=" + admissao + "\n" +
-                '}';
+    public void setAcc(int acc) {
+        this.acc = acc;
     }
 }

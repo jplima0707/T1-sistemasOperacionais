@@ -26,6 +26,10 @@ public class Escalonador {
         p.setStatus(Status.PRONTO);
     }
 
+    public void executar() {
+        return;
+    }
+
     public Queue<BestEffort> getFilaBestEffort() {
         return filaBestEffort;
     }
@@ -48,5 +52,13 @@ public class Escalonador {
 
     public void setFilaRealTimeAlta(Queue<RealTime> filaRealTimeAlta) {
         this.filaRealTimeAlta = filaRealTimeAlta;
+    }
+
+    public int getTempoAtual() {
+        return tempoAtual;
+    }
+
+    public void setTempoAtual(int tempoAtual) {
+        this.tempoAtual = tempoAtual;
     }
 }

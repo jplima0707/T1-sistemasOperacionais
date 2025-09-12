@@ -12,4 +12,9 @@ public class BestEffort extends Programa {
     public BestEffort(Programa p) {
         super(p.getVariaveis(), p.getCodigo(), p.getLabels(), p.getPid(), p.getAdmissao());
     }
+
+    @Override
+    public void executarTick() {
+        return;
+    }
 }

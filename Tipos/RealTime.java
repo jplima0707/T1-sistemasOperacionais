@@ -64,4 +64,17 @@ public class RealTime extends Programa {
         this.quantumRestante = quantumRestante;
     }
 
+    @Override
+    public String toString() {
+        return "BestEffort{ \n" +
+                " pid=" + pid +",\n"
+                + " status=" + status +",\n"
+                + " pc=" + pc +",\n"
+                + " admissao=" + admissao + "\n" +
+                " altaPrioridade=" + altaPrioridade +",\n"
+                + " quantum=" + quantum +",\n"
+                + " quantumRestante=" + quantumRestante + "\n" +
+                '}';
+    }
+
 }

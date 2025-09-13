@@ -25,4 +25,14 @@ public class BestEffort extends Programa {
             status = Status.FINALIZADO;
         }
     }
+
+    @Override
+    public String toString() {
+        return "BestEffort{ \n" +
+                " pid=" + pid +",\n"
+                + " status=" + status +",\n"
+                + " pc=" + pc +",\n"
+                + " admissao=" + admissao + "\n" +
+                '}';
+    }
 }

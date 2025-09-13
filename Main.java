@@ -10,8 +10,6 @@ public class Main {
         escalonador.executar();
         Thread.sleep(1000); // tempo de espera entre ticks
     }
-
-
 }
 
 }

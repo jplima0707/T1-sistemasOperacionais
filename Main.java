@@ -8,7 +8,7 @@ public class Main {
     loader.classificaProgramas(escalonador);
     while (true) {
         escalonador.executar();
-        Thread.sleep(1000); // tempo de espera entre ticks
+        Thread.sleep(1000);
     }
 }
 

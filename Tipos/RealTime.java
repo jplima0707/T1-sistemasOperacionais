@@ -66,7 +66,7 @@ public class RealTime extends Programa {
 
     @Override
     public String toString() {
-        return "BestEffort{ \n" +
+        return "Real Time { \n" +
                 " pid=" + pid +",\n"
                 + " status=" + status +",\n"
                 + " pc=" + pc +",\n"

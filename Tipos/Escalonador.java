@@ -29,8 +29,7 @@ public class Escalonador {
     private void admitirProgramas() {
         for (Programa existente : todosProgramas) {
             if (existente.getAdmissao() <= tempoAtual && 
-                (existente.getStatus() == Status.PRONTO || 
-                existente.getStatus() == Status.NOVO)) {
+                existente.getStatus() == Status.NOVO) {
                 if (existente instanceof RealTime prt) {
                     if (prt.isAltaPrioridade()) filaRealTimeAlta.add(prt);
                     else filaRealTimeBaixa.add(prt);
@@ -42,18 +41,20 @@ public class Escalonador {
         }
     }
 
-    public boolean executar() {
+    public void executar() {
 
         admitirProgramas();
-
+        System.out.println("");
         if (!filaRealTimeAlta.isEmpty()) {
             RealTime p = filaRealTimeAlta.peek();
             p.setStatus(Status.EXECUTANDO);
-            System.out.println("Executando: " + p.getPid());
+            System.out.println("Executando programa: " + p.getPid());
             System.out.println(p.toString());
             p.executarTick();
             if (p.getStatus() == Status.BLOQUEADO) {
+                filaRealTimeAlta.poll();
                 filaBloqueados.add(p);
+                p.setQuantum(p.getQuantum()); // reseta quantum ao ser bloqueado
             } else if (p.getStatus() == Status.FINALIZADO) {
                 filaRealTimeAlta.poll();
             } else if (p.getQuantumRestante() == 0) {
@@ -67,7 +68,9 @@ public class Escalonador {
             System.out.println(p.toString());
             p.executarTick();
             if (p.getStatus() == Status.BLOQUEADO) {
+                filaRealTimeBaixa.poll();
                 filaBloqueados.add(p);
+                p.setQuantum(p.getQuantum()); // reseta quantum ao ser bloqueado
             } else if (p.getStatus() == Status.FINALIZADO) {
                 filaRealTimeBaixa.poll();
             } else if (p.getQuantumRestante() == 0) {
@@ -75,7 +78,7 @@ public class Escalonador {
                 filaRealTimeBaixa.add(p); // vai para o final da fila
             }
         } else if (!filaBestEffort.isEmpty()) {
-            Programa p = filaBestEffort.peek();
+            BestEffort p = filaBestEffort.peek();
             p.setStatus(Status.EXECUTANDO);
             System.out.println("Executando: " + p.getPid());
             System.out.println(p.toString());
@@ -93,20 +96,19 @@ public class Escalonador {
         Queue<Programa> aindaBloqueados = new LinkedList<>();
         while (!filaBloqueados.isEmpty()) {
             Programa p = filaBloqueados.poll();
+            System.out.println("Atualizando bloqueado: " + p.getPid() + " ,ticks restantes: " + (p.getTicksBloqueados()));
             int ticksRestantes = p.getTicksBloqueados();
-            if (ticksRestantes > 1) {
+            if (ticksRestantes >= 1) {
                 p.setTicksBloqueados(ticksRestantes - 1);
                 aindaBloqueados.add(p);
             } else {
                 p.setTicksBloqueados(0);
-                p.setStatus(Status.PRONTO);
+                p.setStatus(Status.NOVO);
             }
         }
         filaBloqueados = aindaBloqueados;
 
         tempoAtual++;
-
-        return !(filaBestEffort.isEmpty() && filaRealTimeBaixa.isEmpty() && filaRealTimeAlta.isEmpty() && filaBloqueados.isEmpty() && todosProgramas.stream().allMatch(pr -> pr.getStatus() == Status.FINALIZADO));
     }
 
     public Queue<BestEffort> getFilaBestEffort() {

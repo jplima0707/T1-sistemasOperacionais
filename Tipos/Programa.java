@@ -48,62 +48,53 @@ public abstract class Programa {
             // Aritmético
             case "ADD":
                 acc += getValorOperando(op);
-                System.out.println("ADD " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
-                pc++;
+                System.out.printf("[PID %d | PC %d] ADD %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "SUB":
                 acc -= getValorOperando(op);
-                System.out.println("SUB " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
-                pc++;
+                System.out.printf("[PID %d | PC %d] SUB %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "MULT":
                 acc *= getValorOperando(op);
-                System.out.println("MULT " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
-                pc++;
+                System.out.printf("[PID %d | PC %d] MULT %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "DIV":
                 acc /= getValorOperando(op);
-                System.out.println("DIV " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
-                pc++;
+                System.out.printf("[PID %d | PC %d] DIV %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
 
             // Memória
             case "LOAD":
                 acc = getValorOperando(op);
-                System.out.println("LOAD " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
-                pc++;
+                System.out.printf("[PID %d | PC %d] LOAD %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "STORE":
                 setValorVariavel(op, acc);
-                System.out.println("STORE " + op + " na linha " + pc + " no programa " + pid + " /acc=" + acc);
-                pc++;
+                System.out.printf("[PID %d | PC %d] STORE %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
 
             // Saltos
             case "BRANY":
-                pc = labels.get(op);
-                System.out.println("Pulou para " + op + " (BRANY)" + " no programa " + pid + " /acc=" + acc);
+                pc = labels.get(op) -1; // -1 porque o pc será incrementado depois
+                System.out.printf("[PID %d | PC %d] BRANY -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 break;
             case "BRPOS":
                 if (acc > 0){
-                    pc = labels.get(op);
-                    System.out.println("Pulou para " + op + " (BRPOS)" + " no programa " + pid + " /acc=" + acc);
+                    pc = labels.get(op)-1;
+                    System.out.printf("[PID %d | PC %d] BRPOS -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 }
-                else pc++;
                 break;
             case "BRZERO":
                 if (acc == 0){
-                 pc = labels.get(op);
-                System.out.println("Pulou para " + op + " (BRZERO)" + " no programa " + pid + " /acc=" + acc);
+                 pc = labels.get(op)-1;
+                System.out.printf("[PID %d | PC %d] BRZERO -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 }
-                else pc++;
                 break;
             case "BRNEG":
                 if (acc < 0){
-                    pc = labels.get(op);
-                    System.out.println("Pulou para " + op + " (BRNEG)" + " no programa " + pid + " /acc=" + acc);
+                    pc = labels.get(op)-1;
+                    System.out.printf("[PID %d | PC %d] BRNEG -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 }
-                else pc++;
                 break;
 
             // Sistema
@@ -111,7 +102,6 @@ public abstract class Programa {
                 try {
                     ticksBloqueados = new Random().nextInt(3) + 3; // 3 a 5 ticks
                     syscall(Integer.parseInt(op));
-                    pc++;
                     break;
                 } catch (Exception e) {
                     throw new RuntimeException("Erro na syscall com operando: " + op);
@@ -125,23 +115,24 @@ public abstract class Programa {
     protected void syscall(int index) {
         switch (index) {
             case 0:
-                System.out.println("Fim do programa.");
+                System.out.printf("[PID %d] Fim do programa.%n", pid);
                 pc = codigo.size(); // força saída
                 status = Status.FINALIZADO;
                 break;
             case 1:
-                System.out.println("ACC = " + acc);
+                System.out.printf("[PID %d] Syscall 1 -> ACC = %d | BLOQUEADO%n", pid, acc);
                 status = Status.BLOQUEADO;
                 break;
             case 2:
+                System.out.printf("[PID %d] Syscall 2 -> Digite um valor inteiro:%n", pid);
                 Scanner scanner = new Scanner(System.in);
-                System.out.println("Digite um valor inteiro:");
                 int valor = scanner.nextInt();
                 acc = valor;
                 status = Status.BLOQUEADO;
+                System.out.printf("[PID %d] Acc atualizado para: %d%n", pid, acc);
                 break;
             default:
-                System.out.println("Syscall não implementada: " + index);
+                System.out.printf("[PID %d] Syscall não implementada: %d%n", pid, index);
         }
     }
 

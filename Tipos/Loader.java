@@ -101,11 +101,12 @@ public class Loader {
                 escalonador.adicionarPrograma(rt);
 
             } else {
-                System.out.println("Tipo inválido. Pulando programa.");
+                System.out.println("Tipo inválido na linha " + i + ". Pulando programa.");
             }
 
             i++;
         }
-        in.close();
+        System.out.println("\n=== Todos os programas foram adicionados ===");
+        System.out.println("");
     }
 }

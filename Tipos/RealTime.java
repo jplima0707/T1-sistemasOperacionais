@@ -6,8 +6,8 @@ import java.util.Map;
 public class RealTime extends Programa {
 
     private boolean altaPrioridade; // true = alta, false = baixa
-    private int quantum; // fatia de tempo em segundos
-    private int quantumRestante; // fatia de tempo restante em segundos
+    private int quantum; // quantidade de segundos que o processo tem no processador
+    private int quantumRestante; // quantidade de segundos restantes do quantum
 
     public RealTime(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int pid, int admissao, int deadline, int quantum) {
         super(variaveis, codigo, labels, pid, admissao);

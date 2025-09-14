@@ -27,8 +27,8 @@ public class Loader {
         Map<String, Integer> labels = new HashMap<>();
         List<Instrucao> codigo = new ArrayList<>();
 
-        boolean lendoCode = false; // indica se está na seção de código
-        boolean lendoData = false; // indica se está na seção de dados
+        boolean lendoCode = false; // indica se esta na parte de código
+        boolean lendoData = false; // indica se esta na parte de dados
 
         List<String> linhas = Files.readAllLines(arquivo.toPath());
         for (String linha : linhas) {
@@ -45,7 +45,7 @@ public class Loader {
                 // Label
                 if (linha.endsWith(":")) {
                 String label = linha.substring(0, linha.length() - 1).trim();
-                labels.put(label, codigo.size()); // próxima instrução
+                labels.put(label, codigo.size()); 
                 continue;
             }
 
@@ -64,7 +64,7 @@ public class Loader {
             }
         }
 
-        return new ProgramaBase(variaveis, codigo, labels, 0, 0); // pid e admissão serão definidos depois
+        return new ProgramaBase(variaveis, codigo, labels, 0, 0); // pid e admissão são settados depois
     }
 
     public void classificaProgramas(Escalonador escalonador) throws IOException{
@@ -73,7 +73,7 @@ public class Loader {
 
         int i = 1;
         for (ProgramaBase info : programas) {
-            System.out.println("\n=== Admitindo programa " + i + " ===");
+            System.out.println("\n=== Adicionando programa " + i + " ===");
 
             System.out.println("Qual o tempo de admissão (em segundos)?");
             int tempoAdmissao = in.nextInt();

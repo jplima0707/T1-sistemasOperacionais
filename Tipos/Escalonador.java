@@ -36,7 +36,7 @@ public class Escalonador {
         } else {
             System.out.println("Nenhum programa para executar neste tick.");
         }
-        
+
         // Atualiza os processos bloqueados
         resolverProcessosBloqueados();
 
@@ -44,7 +44,7 @@ public class Escalonador {
         tempoAtual++;
     }
 
-    public boolean todosProcessosFinalizados(){
+    public boolean todosProcessosFinalizados() {
         for (Programa p : todosProgramas) {
             if (p.getStatus() != Status.FINALIZADO) {
                 return false;
@@ -97,10 +97,10 @@ public class Escalonador {
         }
     }
 
-    private void resolverBestEffort(){
+    private void resolverBestEffort() {
         BestEffort p = filaBestEffort.peek();
         p.setStatus(Status.EXECUTANDO);
-        System.out.println("Executando: " + p.getPid());
+        System.out.println("Executando o Processo: " + p.getPid());
         System.out.println(p.toString());
         p.executarTick();
         if (p.getStatus() == Status.BLOQUEADO) {
@@ -113,11 +113,13 @@ public class Escalonador {
 
     private void admitirProgramas() {
         for (Programa existente : todosProgramas) {
-            if (existente.getAdmissao() <= tempoAtual && 
-                existente.getStatus() == Status.NOVO) {
+            if (existente.getAdmissao() <= tempoAtual &&
+                    existente.getStatus() == Status.NOVO) {
                 if (existente instanceof RealTime prt) {
-                    if (prt.isAltaPrioridade()) filaRealTimeAlta.add(prt);
-                    else filaRealTimeBaixa.add(prt);
+                    if (prt.isAltaPrioridade())
+                        filaRealTimeAlta.add(prt);
+                    else
+                        filaRealTimeBaixa.add(prt);
                 } else if (existente instanceof BestEffort pbe) {
                     filaBestEffort.add(pbe);
                 }
@@ -130,7 +132,8 @@ public class Escalonador {
         Queue<Programa> aindaBloqueados = new LinkedList<>();
         while (!filaBloqueados.isEmpty()) {
             Programa p = filaBloqueados.poll();
-            System.out.println("Atualizando bloqueado: " + p.getPid() + " ,ticks restantes: " + (p.getTicksBloqueados()));
+            System.out
+                    .println("Atualizando bloqueado: " + p.getPid() + " ,ticks restantes: " + (p.getTicksBloqueados()));
             int ticksRestantes = p.getTicksBloqueados();
             if (ticksRestantes >= 1) {
                 p.setTicksBloqueados(ticksRestantes - 1);
@@ -144,8 +147,10 @@ public class Escalonador {
     }
 
     public void printaStatusDosProcessos(int i) {
-        if (i == 0) System.out.println("\n=== Status dos processos antes do tick " + tempoAtual + " ===");
-        else System.out.println("\nStatus dos processos após o tick " + tempoAtual);
+        if (i == 0)
+            System.out.println("\n=== Status dos processos antes do tick " + tempoAtual + " ===");
+        else
+            System.out.println("\nStatus dos processos após o tick " + tempoAtual);
         for (Programa p : todosProgramas) {
             System.out.printf("Processo %d: %s%n", p.getPid(), p.getStatus().toString());
         }

@@ -9,15 +9,16 @@ public class RealTime extends Programa {
     private int quantum; // quantidade de segundos que o processo tem no processador
     private int quantumRestante; // quantidade de segundos restantes do quantum
 
-    public RealTime(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int pid, int admissao, int deadline, int quantum) {
-        super(variaveis, codigo, labels, pid, admissao);
+    public RealTime(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int deadline,
+            int quantum) {
+        super(variaveis, codigo, labels);
         this.altaPrioridade = false;
         this.quantum = quantum;
         this.quantumRestante = quantum;
     }
 
     public RealTime(ProgramaBase p, int quantum) {
-        super(p.getVariaveis(), p.getCodigo(), p.getLabels(), p.getPid(), p.getAdmissao());
+        super(p);
         this.quantum = quantum;
         this.quantumRestante = quantum;
         this.altaPrioridade = false;
@@ -67,12 +68,12 @@ public class RealTime extends Programa {
     @Override
     public String toString() {
         return "Real Time { \n" +
-                " pid=" + pid +",\n"
-                + " status=" + status +",\n"
-                + " pc=" + pc +",\n"
+                " pid=" + pid + ",\n"
+                + " status=" + status + ",\n"
+                + " pc=" + pc + ",\n"
                 + " admissao=" + admissao + "\n" +
-                " altaPrioridade=" + altaPrioridade +",\n"
-                + " quantum=" + quantum +",\n"
+                " altaPrioridade=" + altaPrioridade + ",\n"
+                + " quantum=" + quantum + ",\n"
                 + " quantumRestante=" + quantumRestante + "\n" +
                 '}';
     }

@@ -5,12 +5,12 @@ import java.util.Map;
 
 public class BestEffort extends Programa {
 
-    public BestEffort(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int pid, int admissao) {
-        super(variaveis, codigo, labels, pid, admissao);
+    public BestEffort(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels) {
+        super(variaveis, codigo, labels);
     }
 
     public BestEffort(ProgramaBase p) {
-        super(p.getVariaveis(), p.getCodigo(), p.getLabels(), p.getPid(), p.getAdmissao());
+        super(p);
     }
 
     @Override
@@ -29,9 +29,9 @@ public class BestEffort extends Programa {
     @Override
     public String toString() {
         return "BestEffort{ \n" +
-                " pid=" + pid +",\n"
-                + " status=" + status +",\n"
-                + " pc=" + pc +",\n"
+                " pid=" + pid + ",\n"
+                + " status=" + status + ",\n"
+                + " pc=" + pc + ",\n"
                 + " admissao=" + admissao + "\n" +
                 '}';
     }

@@ -14,8 +14,7 @@ public class Loader {
                 ProgramaBase p = carregarPrograma(arquivo.toFile());
                 programas.add(p);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -33,21 +32,34 @@ public class Loader {
         List<String> linhas = Files.readAllLines(arquivo.toPath());
         for (String linha : linhas) {
             linha = linha.trim().toUpperCase();
-            if (linha.isEmpty() || linha.startsWith("//")) continue;
+            if (linha.isEmpty() || linha.startsWith("//"))
+                continue;
 
             // Controle de seções
-            if (linha.equalsIgnoreCase(".code")) { lendoCode = true; continue; }
-            if (linha.equalsIgnoreCase(".endcode")) { lendoCode = false; continue; }
-            if (linha.equalsIgnoreCase(".data")) { lendoData = true; continue; }
-            if (linha.equalsIgnoreCase(".enddata")) { lendoData = false; continue; }
+            if (linha.equalsIgnoreCase(".code")) {
+                lendoCode = true;
+                continue;
+            }
+            if (linha.equalsIgnoreCase(".endcode")) {
+                lendoCode = false;
+                continue;
+            }
+            if (linha.equalsIgnoreCase(".data")) {
+                lendoData = true;
+                continue;
+            }
+            if (linha.equalsIgnoreCase(".enddata")) {
+                lendoData = false;
+                continue;
+            }
 
             if (lendoCode) {
                 // Label
                 if (linha.endsWith(":")) {
-                String label = linha.substring(0, linha.length() - 1).trim();
-                labels.put(label, codigo.size()); 
-                continue;
-            }
+                    String label = linha.substring(0, linha.length() - 1).trim();
+                    labels.put(label, codigo.size());
+                    continue;
+                }
 
                 // Instrução
                 String[] parts = linha.split(" ", 2);
@@ -64,10 +76,10 @@ public class Loader {
             }
         }
 
-        return new ProgramaBase(variaveis, codigo, labels, 0, 0); // pid e admissão são settados depois
+        return new ProgramaBase(variaveis, codigo, labels); // pid e admissão serão definidos depois
     }
 
-    public void classificaProgramas(Escalonador escalonador) throws IOException{
+    public void classificaProgramas(Escalonador escalonador) throws IOException {
         List<ProgramaBase> programas = carregarProgramas("Codigos");
         Scanner in = new Scanner(System.in);
 

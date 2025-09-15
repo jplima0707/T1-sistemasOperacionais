@@ -3,32 +3,37 @@ package Tipos;
 import java.util.*;
 
 public abstract class Programa {
-    protected Map<String, Integer> variaveis;   // nome -> valor
-    protected Map<String, Integer> labels;      // label -> posição na lista de código
-    protected List<Instrucao> codigo;           // lista de instruções
-    protected int acc;                          // acumulador 
-    protected int pc;                           // program counter
-    protected int pid;                          // identificador do processo
-    protected int admissao;                     // tempo de admissão do processo
-    protected Status status;                  // status do processo
-    protected int ticksBloqueados;            // ticks restantes em estado BLOQUEADO
+    protected Map<String, Integer> variaveis; // nome -> valor
+    protected Map<String, Integer> labels; // label -> posição na lista de código
+    protected List<Instrucao> codigo; // lista de instruções
+    protected int acc; // acumulador
+    protected int pc; // program counter
+    protected int pid; // identificador do processo
+    protected int admissao; // tempo de admissão do processo
+    protected Status status; // status do processo
+    protected int ticksBloqueados; // ticks restantes em estado BLOQUEADO
 
-    public Programa(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int pid, int admissao) {
+    public Programa(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels) {
         this.variaveis = variaveis;
         this.codigo = codigo;
         this.labels = labels;
         this.acc = 0;
         this.pc = 0;
-        this.pid = pid;
-        this.admissao = admissao;
+        this.pid = 0;
+        this.admissao = 0;
         this.status = Status.NOVO;
         this.ticksBloqueados = 0;
+    }
+
+    public Programa(ProgramaBase p) {
+        this(p.getVariaveis(), p.getCodigo(), p.getLabels());
     }
 
     public abstract void executarTick();
 
     protected int getValor(String op) {
-        if (op == null) return 0;
+        if (op == null)
+            return 0;
         if (op.startsWith("#")) { // imediato (valor após o #)
             return Integer.parseInt(op.substring(1));
         }
@@ -75,24 +80,24 @@ public abstract class Programa {
 
             // Saltos
             case "BRANY":
-                pc = labels.get(op) -1; // -1 porque o pc será incrementado depois
+                pc = labels.get(op) - 1; // -1 porque o pc será incrementado depois
                 System.out.printf("[PID %d | PC %d] BRANY -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 break;
             case "BRPOS":
-                if (acc > 0){
-                    pc = labels.get(op)-1;
+                if (acc > 0) {
+                    pc = labels.get(op) - 1;
                     System.out.printf("[PID %d | PC %d] BRPOS -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 }
                 break;
             case "BRZERO":
-                if (acc == 0){
-                 pc = labels.get(op)-1;
-                System.out.printf("[PID %d | PC %d] BRZERO -> Linha %s | ACC = %d%n", pid, pc, op, acc);
+                if (acc == 0) {
+                    pc = labels.get(op) - 1;
+                    System.out.printf("[PID %d | PC %d] BRZERO -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 }
                 break;
             case "BRNEG":
-                if (acc < 0){
-                    pc = labels.get(op)-1;
+                if (acc < 0) {
+                    pc = labels.get(op) - 1;
                     System.out.printf("[PID %d | PC %d] BRNEG -> Linha %s | ACC = %d%n", pid, pc, op, acc);
                 }
                 break;
@@ -108,6 +113,7 @@ public abstract class Programa {
                 }
 
             default:
+                status = Status.FINALIZADO;
                 throw new RuntimeException("Instrução desconhecida: " + cmd);
         }
     }

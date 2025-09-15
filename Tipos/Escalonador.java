@@ -23,6 +23,7 @@ public class Escalonador {
     }
 
     public void executar() {
+        printaStatusDosProcessos(0);
 
         admitirProgramas();
         System.out.println("");
@@ -39,7 +40,17 @@ public class Escalonador {
         // Atualiza os processos bloqueados
         resolverProcessosBloqueados();
 
+        printaStatusDosProcessos(1);
         tempoAtual++;
+    }
+
+    public boolean todosProcessosFinalizados(){
+        for (Programa p : todosProgramas) {
+            if (p.getStatus() != Status.FINALIZADO) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void adicionarPrograma(Programa p) {
@@ -55,12 +66,14 @@ public class Escalonador {
         if (p.getStatus() == Status.BLOQUEADO) {
             filaRealTimeAlta.poll();
             filaBloqueados.add(p);
-            p.setQuantum(p.getQuantum()); // reseta quantum ao ser bloqueado
+            p.setQuantumRestante(p.getQuantum()); // reseta quantum ao ser bloqueado
         } else if (p.getStatus() == Status.FINALIZADO) {
             filaRealTimeAlta.poll();
         } else if (p.getQuantumRestante() == 0) {
             filaRealTimeAlta.poll();
             filaRealTimeAlta.add(p); // vai para o final da fila
+            p.setQuantumRestante(p.getQuantum());
+            p.setStatus(Status.PRONTO);
         }
     }
 
@@ -73,12 +86,14 @@ public class Escalonador {
         if (p.getStatus() == Status.BLOQUEADO) {
             filaRealTimeBaixa.poll();
             filaBloqueados.add(p);
-            p.setQuantum(p.getQuantum()); // reseta quantum ao ser bloqueado
+            p.setQuantumRestante(p.getQuantum()); // reseta quantum ao ser bloqueado
         } else if (p.getStatus() == Status.FINALIZADO) {
             filaRealTimeBaixa.poll();
         } else if (p.getQuantumRestante() == 0) {
             filaRealTimeBaixa.poll();
             filaRealTimeBaixa.add(p); // vai para o final da fila
+            p.setQuantumRestante(p.getQuantum());
+            p.setStatus(Status.PRONTO);
         }
     }
 
@@ -126,6 +141,14 @@ public class Escalonador {
             }
         }
         filaBloqueados = aindaBloqueados;
+    }
+
+    public void printaStatusDosProcessos(int i) {
+        if (i == 0) System.out.println("\n=== Status dos processos antes do tick " + tempoAtual + " ===");
+        else System.out.println("\nStatus dos processos após o tick " + tempoAtual);
+        for (Programa p : todosProgramas) {
+            System.out.printf("Processo %d: %s%n", p.getPid(), p.getStatus().toString());
+        }
     }
 
     public Queue<BestEffort> getFilaBestEffort() {

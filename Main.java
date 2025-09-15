@@ -9,6 +9,11 @@ public class Main {
     while (true) {
         escalonador.executar();
         Thread.sleep(1000);
+
+        if (escalonador.todosProcessosFinalizados()) {
+            System.out.println("Todos os processos foram finalizados.");
+            break;
+        }
     }
 }
 

@@ -27,7 +27,7 @@ public abstract class Programa {
 
     public abstract void executarTick();
 
-    protected int getValorOperando(String op) {
+    protected int getValor(String op) {
         if (op == null) return 0;
         if (op.startsWith("#")) { // imediato (valor após o #)
             return Integer.parseInt(op.substring(1));
@@ -47,25 +47,25 @@ public abstract class Programa {
         switch (cmd) {
             // Aritmético
             case "ADD":
-                acc += getValorOperando(op);
+                acc += getValor(op);
                 System.out.printf("[PID %d | PC %d] ADD %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "SUB":
-                acc -= getValorOperando(op);
+                acc -= getValor(op);
                 System.out.printf("[PID %d | PC %d] SUB %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "MULT":
-                acc *= getValorOperando(op);
+                acc *= getValor(op);
                 System.out.printf("[PID %d | PC %d] MULT %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "DIV":
-                acc /= getValorOperando(op);
+                acc /= getValor(op);
                 System.out.printf("[PID %d | PC %d] DIV %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
 
             // Memória
             case "LOAD":
-                acc = getValorOperando(op);
+                acc = getValor(op);
                 System.out.printf("[PID %d | PC %d] LOAD %s -> ACC = %d%n", pid, pc, op, acc);
                 break;
             case "STORE":
@@ -120,15 +120,15 @@ public abstract class Programa {
                 status = Status.FINALIZADO;
                 break;
             case 1:
-                System.out.printf("[PID %d] Syscall 1 -> ACC = %d | BLOQUEADO%n", pid, acc);
                 status = Status.BLOQUEADO;
+                System.out.printf("[PID %d] Syscall 1 -> ACC = %d | BLOQUEADO%n", pid, acc);
                 break;
             case 2:
+                status = Status.BLOQUEADO;
                 System.out.printf("[PID %d] Syscall 2 -> Digite um valor inteiro:%n", pid);
                 Scanner scanner = new Scanner(System.in);
                 int valor = scanner.nextInt();
                 acc = valor;
-                status = Status.BLOQUEADO;
                 System.out.printf("[PID %d] Acc atualizado para: %d%n", pid, acc);
                 break;
             default:

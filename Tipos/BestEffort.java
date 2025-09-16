@@ -14,19 +14,6 @@ public class BestEffort extends Programa {
     }
 
     @Override
-    public void executarTick() {
-        if (pc < codigo.size()) {
-            Instrucao instrucao = codigo.get(pc);
-
-            interpretar(instrucao);
-
-            pc++;
-        } else {
-            status = Status.FINALIZADO;
-        }
-    }
-
-    @Override
     public String toString() {
         return "BestEffort{ \n" +
                 " pid=" + pid + ",\n"

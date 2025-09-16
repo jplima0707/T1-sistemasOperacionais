@@ -9,8 +9,7 @@ public class RealTime extends Programa {
     private int quantum; // quantidade de segundos que o processo tem no processador
     private int quantumRestante; // quantidade de segundos restantes do quantum
 
-    public RealTime(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int deadline,
-            int quantum) {
+    public RealTime(Map<String, Integer> variaveis, List<Instrucao> codigo, Map<String, Integer> labels, int deadline, int quantum) {
         super(variaveis, codigo, labels);
         this.altaPrioridade = false;
         this.quantum = quantum;
@@ -22,23 +21,6 @@ public class RealTime extends Programa {
         this.quantum = quantum;
         this.quantumRestante = quantum;
         this.altaPrioridade = false;
-    }
-
-    @Override
-    public void executarTick() {
-        if (pc < codigo.size() && quantumRestante > 0) {
-            Instrucao instrucao = codigo.get(pc);
-
-            interpretar(instrucao);
-
-            pc++;
-            quantumRestante--;
-        } else if (quantumRestante <= 0 && status == Status.EXECUTANDO) {
-            status = Status.PRONTO;
-            quantumRestante = quantum; // reseta para próxima vez que for escalonado
-        } else {
-            status = Status.FINALIZADO;
-        }
     }
 
     public boolean isAltaPrioridade() {
